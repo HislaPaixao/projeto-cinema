@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManager - Bilheteria Multi-Assentos</title>
+    <link rel="stylesheet" href="bilheteria.css">
+</head>
+<body>
+
+    <div class="pos-container">
+        <aside class="pos-sidebar">
+            <div class="sidebar-header">
+                <a href="../login/index.html" class="btn-back">← Sair</a>
+                
+                <a href="ingressos.html" style="color: #2563eb; text-decoration: none; display: block; font-size: 0.85rem; margin-bottom: 15px; font-weight: bold;">Ver Ingressos Emitidos</a>
+                
+                <h2>Venda de Ingressos </h2>
+            </div>
+
+            <div class="sidebar-group">
+                <label for="sessionSelect">Selecione a Sessão:</label>
+                <select id="sessionSelect">
+                    <option value="" disabled selected>Escolha uma sessão...</option>
+                    <option value="1">Coringa - 19:00 (Sala 3D - VIP) [18 Anos]</option>
+                    <option value="2">Vingadores - 21:30 (Sala Tradicional) [12 Anos]</option>
+                    <option value="3">Toy Story 4 - 14:00 (Sala 3D) [Livre]</option>
+                </select>
+            </div>
+
+            <div class="sidebar-group">
+                <label>Configurar Ingressos:</label>
+                <div id="selectedSeatsList" class="selected-seats-list">
+                    <p class="empty-list-text">Nenhum assento selecionado no mapa.</p>
+                </div>
+            </div>
+
+            <div class="checkout-box">
+                <h3>Resumo do Pedido</h3>
+                <div class="total-price">
+                    <span>Total a Pagar:</span>
+                    <span id="totalPriceLabel">R$ 0,00</span>
+                </div>
+                <button id="btnConfirmSale" class="btn-confirm" disabled>Confirmar Venda</button>
+            </div>
+        </aside>
+
+        <main class="pos-main">
+            <div class="screen-indicator">TELA DO CINEMA </div>
+            
+            <div class="seats-legend">
+                <div class="legend-item"><span class="seat-sample available"></span> Livre</div>
+                <div class="legend-item"><span class="seat-sample selected"></span> Selecionado</div>
+                <div class="legend-item"><span class="seat-sample occupied"></span> Ocupado</div>
+            </div>
+
+            <div id="seatingGrid" class="seating-grid">
+                <p class="select-session-prompt">Por favor, selecione uma sessão ao lado para carregar o mapa de assentos.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="bilheteria.js"></script>
+</body>
+</html>

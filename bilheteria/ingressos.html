@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManager - Controle de Ingressos</title>
+    <link rel="stylesheet" href="bilheteria.css">
+</head>
+<body>
+
+    <div class="tickets-manager-container">
+        <header class="manager-header">
+            <div class="header-left">
+                <a href="index.html" class="btn-back">← Voltar para a Bilheteria</a>
+                <h1>Consulta e Relatório de Ingressos </h1>
+            </div>
+        </header>
+
+        <section class="search-section">
+            <input type="text" id="ticketSearchInput" placeholder="Digite o número/código do ingresso para validar...">
+            <button id="btnSearchTicket" class="btn-search">Validar Ingresso</button>
+        </section>
+
+        <main class="table-section">
+            <table class="tickets-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Filme / Sessão</th>
+                        <th>Assento</th>
+                        <th>Tipo</th>
+                        <th>Valor Total</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketsTableBody">
+                    </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="ingressos.js"></script>
+</body>
+</html>

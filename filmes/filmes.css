@@ -1,0 +1,319 @@
+
+   :root {
+    --bg-main: #121212;
+    --bg-card: #1e1e1e;
+    --primary: #e50914; 
+    --primary-hover: #f40a16;
+    --text-main: #ffffff;
+    --text-muted: #aaaaaa;
+    --border-color: #333333;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --warning: #f59e0b;
+    --warning-hover: #d97706;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.admin-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-back {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.btn-back:hover {
+    color: #fff;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+}
+
+.btn-add {
+    background-color: #16a34a;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.btn-add:hover {
+    background-color: #15803d;
+}
+
+.search-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+#searchBar {
+    flex: 1;
+    padding: 12px 15px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+}
+
+#searchBar:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.btn-search {
+    background-color: var(--bg-card);
+    color: white;
+    border: 1px solid var(--border-color);
+    padding: 0 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-search:hover {
+    border-color: var(--primary);
+    background-color: #252525;
+}
+
+.table-section {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.movies-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.movies-table th, .movies-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.movies-table th {
+    background-color: #151515;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.movies-table tbody tr:hover {
+    background-color: #252525;
+}
+
+.movies-table td {
+    font-size: 0.95rem;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit, .btn-delete {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-edit {
+    background-color: var(--warning);
+    color: #121212;
+}
+
+.btn-edit:hover {
+    background-color: var(--warning-hover);
+}
+
+.btn-delete {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: var(--danger-hover);
+}
+
+   .form-container {
+    max-width: 650px;
+    margin: 40px auto;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.form-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.form-header h1 {
+    font-size: 1.8rem;
+    margin-top: 15px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+    width: 100%;
+    padding: 14px;
+    background-color: #121212;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.form-grid {
+    display: flex;
+    gap: 20px;
+}
+
+.form-grid .form-group {
+    flex: 1;
+}
+
+.genres-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    background-color: #121212;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.checkbox-label {
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-label input {
+    accent-color: var(--primary); 
+    width: 16px;
+    height: 16px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.btn-cancel {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #252525;
+    color: #fff;
+}
+
+.btn-save {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background-color: var(--primary-hover);
+}
+
+@media (max-width: 500px) {
+    .form-grid {
+        flex-direction: column;
+        gap: 0;
+    }
+    .genres-checkbox-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManager - Cadastrar Filme</title>
+    <link rel="stylesheet" href="filmes.css">
+</head>
+<body>
+
+    <div class="form-container">
+        <header class="form-header">
+            <a href="index.html" class="btn-back">← Voltar para a Listagem</a>
+            <h1 id="formTitle">Cadastrar Novo Filme</h1>
+        </header>
+
+        <form id="movieForm">
+            <input type="hidden" id="movieId">
+
+            <div class="form-group">
+                <label for="movieTitle">Título do Filme *</label>
+                <input type="text" id="movieTitle" required placeholder="Ex: Batman: O Cavaleiro das Trevas">
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="movieDuration">Duração (em minutos) *</label>
+                    <input type="number" id="movieDuration" required min="1" placeholder="Ex: 152">
+                </div>
+
+                <div class="form-group">
+                    <label for="movieRating">Classificação Indicativa *</label>
+                    <select id="movieRating" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="Livre">Livre</option>
+                        <option value="10 anos">10 anos</option>
+                        <option value="12 anos">12 anos</option>
+                        <option value="14 anos">14 anos</option>
+                        <option value="16 anos">16 anos</option>
+                        <option value="18 anos">18 anos (Restrita)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Gêneros do Filme (Opcional)</label>
+                <div class="genres-checkbox-grid">
+                    <label class="checkbox-label"><input type="checkbox" name="genres" value="Ação"> Ação</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genres" value="Comédia"> Comédia</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genres" value="Drama"> Drama</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genres" value="Terror"> Terror</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genres" value="Ficção Científica"> Ficção Científica</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genres" value="Animação"> Animação</label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="window.location.href='index.html'">Cancelar</button>
+                <button type="submit" class="btn-save">Salvar Filme</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="cadastro.js"></script>
+</body>
+</html>
