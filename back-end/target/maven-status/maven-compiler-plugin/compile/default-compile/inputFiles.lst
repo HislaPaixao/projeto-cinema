@@ -1,0 +1,13 @@
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\dao\FilmeDAO.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\dao\GeneroDAO.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\dao\UsuarioDAO.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\dto\LoginRequest.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\dto\LoginResponse.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\model\Filme.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\model\Genero.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\model\Usuario.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\service\LoginService.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\servlet\FilmeServlet.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\servlet\GeneroServlet.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\servlet\LoginServlet.java
+C:\Users\Lucas\Documents\Lucas\projeto-cinema\back-end\src\main\java\com\cinema\util\DatabaseConnection.java

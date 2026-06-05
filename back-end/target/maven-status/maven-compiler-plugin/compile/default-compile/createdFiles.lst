@@ -1,0 +1,13 @@
+com\cinema\dao\GeneroDAO.class
+com\cinema\servlet\LoginServlet.class
+com\cinema\model\Genero.class
+com\cinema\model\Filme.class
+com\cinema\servlet\GeneroServlet.class
+com\cinema\dao\UsuarioDAO.class
+com\cinema\service\LoginService.class
+com\cinema\util\DatabaseConnection.class
+com\cinema\dto\LoginRequest.class
+com\cinema\model\Usuario.class
+com\cinema\dao\FilmeDAO.class
+com\cinema\servlet\FilmeServlet.class
+com\cinema\dto\LoginResponse.class
