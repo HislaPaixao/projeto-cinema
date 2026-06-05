@@ -12,13 +12,13 @@
         <header class="manager-header">
             <div class="header-left">
                 <a href="index.html" class="btn-back">← Voltar para a Bilheteria</a>
-                <h1>Consulta e Relatório de Ingressos </h1>
+                <h1>Consulta e Relatório de Ingressos</h1>
             </div>
         </header>
 
         <section class="search-section">
-            <input type="text" id="ticketSearchInput" placeholder="Digite o número/código do ingresso para validar...">
-            <button id="btnSearchTicket" class="btn-search">Validar Ingresso</button>
+            <input type="text" id="ticketSearchInput" placeholder="Digite o número do ingresso ou assento...">
+            <button id="btnSearchTicket" class="btn-search">Buscar</button>
         </section>
 
         <main class="table-section">
@@ -26,19 +26,20 @@
                 <thead>
                     <tr>
                         <th>Código</th>
-                        <th>Filme / Sessão</th>
                         <th>Assento</th>
                         <th>Tipo</th>
-                        <th>Valor Total</th>
+                        <th>Valor</th>
+                        <th>Data</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="ticketsTableBody">
-                    </tbody>
+                </tbody>
             </table>
         </main>
     </div>
 
+    <script src="../js/api.js"></script>
     <script src="ingressos.js"></script>
 </body>
 </html>

@@ -3,6 +3,10 @@ package com.cinema.servlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -38,13 +42,12 @@ public class FilmeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
-        String pathInfo = request.getPathInfo(); // /filmes/1 ou /filmes/busca?q=termo
+        String pathInfo = request.getPathInfo();
         
         try (Connection connection = DatabaseConnection.getConnection()) {
             FilmeDAO filmeDAO = new FilmeDAO(connection);
             
             if (pathInfo == null || pathInfo.equals("/")) {
-                // Listar todos os filmes
                 String pesquisa = request.getParameter("q");
                 List<Filme> filmes;
                 
@@ -57,7 +60,6 @@ public class FilmeServlet extends HttpServlet {
                 response.getWriter().write(gson.toJson(filmes));
                 
             } else {
-                // Buscar por ID
                 try {
                     int id = Integer.parseInt(pathInfo.substring(1));
                     Filme filme = filmeDAO.buscarPorId(id);
@@ -81,7 +83,7 @@ public class FilmeServlet extends HttpServlet {
         }
     }
     
-    // POST - Criar novo filme
+    // POST - Criar novo filme + sessão automática
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -90,7 +92,6 @@ public class FilmeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
-        // Ler JSON
         StringBuilder sb = new StringBuilder();
         String line;
         BufferedReader reader = request.getReader();
@@ -103,6 +104,9 @@ public class FilmeServlet extends HttpServlet {
         try (Connection connection = DatabaseConnection.getConnection()) {
             FilmeDAO filmeDAO = new FilmeDAO(connection);
             Filme novoFilme = filmeDAO.inserir(filme);
+            
+            // Criar sessão automática
+            criarSessaoAutomatica(connection, novoFilme.getId());
             
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.getWriter().write(gson.toJson(novoFilme));
@@ -123,7 +127,6 @@ public class FilmeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
-        // Ler JSON
         StringBuilder sb = new StringBuilder();
         String line;
         BufferedReader reader = request.getReader();
@@ -179,6 +182,34 @@ public class FilmeServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"erro\":\"" + e.getMessage() + "\"}");
             e.printStackTrace();
+        }
+    }
+    
+    // Método para criar sessão automática
+    private void criarSessaoAutomatica(Connection connection, int filmeId) {
+        try {
+            String sql = "INSERT INTO sessao (data_hora, preco_base, fk_filme_id_filme, fk_sala_id_sala) " +
+                         "VALUES (?, ?, ?, ?)";
+            
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                // Data: amanhã às 19:00
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+                cal.set(Calendar.HOUR_OF_DAY, 19);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                Timestamp dataHora = new Timestamp(cal.getTimeInMillis());
+                
+                stmt.setTimestamp(1, dataHora);
+                stmt.setDouble(2, 15.00); // Preço base padrão
+                stmt.setInt(3, filmeId);
+                stmt.setInt(4, 1); // Sala 1 padrão
+                
+                stmt.executeUpdate();
+                System.out.println("✅ Sessão automática criada para o filme ID: " + filmeId);
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao criar sessão automática: " + e.getMessage());
         }
     }
 }

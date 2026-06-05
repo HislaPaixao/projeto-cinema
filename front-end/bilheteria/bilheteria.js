@@ -1,164 +1,201 @@
-const sessoesMock = {
-    "1": { filme: "Coringa", precoBase: 20.00, tipoSala: "3D-VIP", classificacao: "18 anos", ocupados: ["A3", "B5"] },
-    "2": { filme: "Vingadores: Ultimato", precoBase: 15.00, tipoSala: "Tradicional", classificacao: "12 anos", ocupados: ["C2"] },
-    "3": { filme: "Toy Story 4", precoBase: 12.00, tipoSala: "3D", classificacao: "Livre", ocupados: [] }
-};
-
 let sessaoSelecionada = null;
-//  Guardará pares de chave/valor -> Ex: {"A1": "Inteira", "A2": "Meia"}
 let assentosEscolhidos = {};
 
-document.getElementById('sessionSelect').addEventListener('change', function(e) {
-    sessaoSelecionada = sessoesMock[e.target.value];
-    assentosEscolhidos = {}; // Reseta as seleções anteriores
+// Usar dados do banco, com fallback para mock
+async function init() {
+    try {
+        const sessoes = await window.CineAPI.buscarDados('sessoes');
+        if (sessoes.length > 0) {
+            preencherSelect(sessoes);
+            return;
+        }
+    } catch (e) {
+        console.log('Usando dados mock (servidor offline)');
+    }
+    // Se não carregou do banco, usa o HTML como está
+}
+
+function preencherSelect(sessoes) {
+    const select = document.getElementById('sessionSelect');
+    select.innerHTML = '<option value="" disabled selected>Escolha uma sessão...</option>';
     
-    atualizarInterfaceVenda();
+    sessoes.forEach(sessao => {
+        const option = document.createElement('option');
+        option.value = sessao.id;
+        option.dataset.salaId = sessao.salaId;
+        option.dataset.salaTipo = sessao.salaTipo;
+        option.dataset.classificacao = sessao.classificacao;
+        option.dataset.precoBase = sessao.precoBase;
+        
+        const data = new Date(sessao.dataHora);
+        const hora = data.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        option.textContent = `${sessao.filmeTitulo} - ${hora} (${sessao.salaTipo}) [${sessao.classificacao}]`;
+        
+        select.appendChild(option);
+    });
+}
+
+document.getElementById('sessionSelect').addEventListener('change', async function(e) {
+    const option = e.target.selectedOptions[0];
+    if (!option || !option.value) return;
+    
+    const salaId = parseInt(option.dataset.salaId || '1');
+    const classificacao = option.dataset.classificacao || 'Livre';
+    const tipoSala = option.dataset.salaTipo || 'Tradicional';
+    const precoBase = parseFloat(option.dataset.precoBase || '15');
+    
+    sessaoSelecionada = {
+        id: parseInt(option.value),
+        precoBase: precoBase,
+        tipoSala: tipoSala,
+        classificacao: classificacao,
+        salaId: salaId,
+        ocupados: []
+    };
+    
+    assentosEscolhidos = {};
+    
+    // Buscar ocupados do banco
+    try {
+        const ocupados = await window.CineAPI.buscarDados(`sessoes/${sessaoSelecionada.id}/assentos`);
+        sessaoSelecionada.ocupados = ocupados || [];
+    } catch (e) {
+        sessaoSelecionada.ocupados = [];
+    }
+    
     gerarMapaAssentos();
+    atualizarInterfaceVenda();
 });
 
 function gerarMapaAssentos() {
     const grid = document.getElementById('seatingGrid');
-    grid.innerHTML = ''; 
-
-    const fileiras = ['A', 'B', 'C', 'D', 'E'];
-
-    fileiras.forEach(fileira => {
-        for (let coluna = 1; coluna <= 10; coluna++) {
-            const numeroAssento = `${fileira}${coluna}`;
-            const btnAssento = document.createElement('button');
-            btnAssento.classList.add('seat');
-            btnAssento.innerText = numeroAssento;
-
-            if (sessaoSelecionada.ocupados.includes(numeroAssento)) {
-                btnAssento.classList.add('occupied');
-            } else {
-                btnAssento.addEventListener('click', () => alternarAssento(numeroAssento, btnAssento));
-            }
-
-            grid.appendChild(btnAssento);
-        }
-    });
-}
-
-// ADICIONA OU REMOVE ASSENTOS DA SELEÇÃO MÚLTIPLA
-function alternarAssento(numero, elementoHTML) {
-    if (assentosEscolhidos[numero]) {
-        // Se já estava selecionado, remove do objeto e tira a cor azul
-        delete assentosEscolhidos[numero];
-        elementoHTML.classList.remove('selected');
-    } else {
-        // Se não estava selecionado, adiciona ao objeto definindo 'Inteira' como padrão
-        assentosEscolhidos[numero] = 'Inteira';
-        elementoHTML.classList.add('selected');
-    }
-
-    atualizarInterfaceVenda();
-}
-
-// ATUALIZA A LISTA DA BARRA LATERAL E O CÁLCULO DE PREÇO TOTAL (RN03)
-function atualizarInterfaceVenda() {
-    const containerLista = document.getElementById('selectedSeatsList');
-    const btnConfirmar = document.getElementById('btnConfirmSale');
+    grid.innerHTML = '';
     
-    containerLista.innerHTML = ''; // Limpa a lista lateral
-
-    const listaChaves = Object.keys(assentosEscolhidos);
-
-    if (listaChaves.length === 0) {
-        containerLista.innerHTML = '<p class="empty-list-text">Nenhum assento selecionado no mapa.</p>';
-        document.getElementById('totalPriceLabel').innerText = "R$ 0,00";
-        btnConfirmar.disabled = true;
+    if (!sessaoSelecionada) {
+        grid.innerHTML = '<p class="select-session-prompt">Selecione uma sessão ao lado.</p>';
         return;
     }
-
-    let precoTotalPedido = 0;
-
-    // Para cada assento selecionado, cria um controle individual na barra lateral
-    listaChaves.forEach(assento => {
-        const tipoAtual = assentosEscolhidos[assento];
-        
-        // Calcula o preço específico deste ingresso (Aplica RN03)
-        let valorIngresso = sessaoSelecionada.precoBase;
-        if (tipoAtual === 'Meia') valorIngresso /= 2;
-
-        if (sessaoSelecionada.tipoSala.includes('VIP') || sessaoSelecionada.tipoSala.includes('3D')) {
-            valorIngresso += valorIngresso * 0.40; // +40%
+    
+    ['A','B','C','D','E'].forEach(fileira => {
+        for (let c = 1; c <= 10; c++) {
+            const num = `${fileira}${c}`;
+            const btn = document.createElement('button');
+            btn.className = 'seat';
+            btn.textContent = num;
+            
+            if (sessaoSelecionada.ocupados.includes(num)) {
+                btn.classList.add('occupied');
+                btn.disabled = true;
+            } else {
+                btn.onclick = () => alternarAssento(num, btn);
+            }
+            grid.appendChild(btn);
         }
-
-        precoTotalPedido += valorIngresso;
-
-        // Cria a caixa visual na barra lateral para este assento
-        const itemDiv = document.createElement('div');
-        itemDiv.style.backgroundColor = '#121212';
-        itemDiv.style.padding = '10px';
-        itemDiv.style.marginBottom = '10px';
-        itemDiv.style.borderRadius = '6px';
-        itemDiv.style.border = '1px solid #333';
-        itemDiv.style.display = 'flex';
-        itemDiv.style.justifyContent = 'space-between';
-        itemDiv.style.alignItems = 'center';
-
-        itemDiv.innerHTML = `
-            <span style="font-weight: bold; color: #2563eb;">${assento}</span>
-            <select onchange="mudarTipoIngresso('${assento}', this.value)" style="padding: 5px; background: #1e1e1e; color: white; border: 1px solid #333; border-radius: 4px;">
-                <option value="Inteira" ${tipoAtual === 'Inteira' ? 'selected' : ''}>Inteira</option>
-                <option value="Meia" ${tipoAtual === 'Meia' ? 'selected' : ''}>Meia-Entrada</option>
-                <option value="Infantil" ${tipoAtual === 'Infantil' ? 'selected' : ''}>Infantil</option>
-            </select>
-            <span style="font-size: 0.9rem; color: #16a34a; font-weight: bold;">R$ ${valorIngresso.toFixed(2)}</span>
-        `;
-
-        containerLista.appendChild(itemDiv);
     });
-
-    document.getElementById('totalPriceLabel').innerText = `R$ ${precoTotalPedido.toFixed(2)}`;
-    btnConfirmar.disabled = false;
 }
 
-// CALCULA NOVAMENTE QUANDO O OPERADOR MUDAR O SELECT DE UM ASSENTO ESPECÍFICO
-function mudarTipoIngresso(assento, novoTipo) {
-    assentosEscolhidos[assento] = novoTipo;
+function alternarAssento(num, el) {
+    if (assentosEscolhidos[num]) {
+        delete assentosEscolhidos[num];
+        el.classList.remove('selected');
+    } else {
+        assentosEscolhidos[num] = 'Inteira';
+        el.classList.add('selected');
+    }
     atualizarInterfaceVenda();
 }
 
-// CONFIRMAÇÃO DE VENDA COM VALIDAÇÃO DE IDADE EM LOTE (RN02)
-document.getElementById('btnConfirmSale').addEventListener('click', () => {
-    const assentosArray = Object.keys(assentosEscolhidos);
-    let precisaValidarIdade = false;
-
-    // Varre todos os ingressos selecionados para ver se algum quebra a RN02
-    if (sessaoSelecionada.classificacao === "18 anos") {
-        for (let i = 0; i < assentosArray.length; i++) {
-            const assento = assentosArray[i];
-            const tipo = assentosEscolhidos[assento];
-            if (tipo === "Infantil" || tipo === "Meia") {
-                precisaValidarIdade = true;
-                break; // Achou um, já ativa o alerta de barreira
-            }
-        }
+function atualizarInterfaceVenda() {
+    const container = document.getElementById('selectedSeatsList');
+    const btn = document.getElementById('btnConfirmSale');
+    const totalLabel = document.getElementById('totalPriceLabel');
+    
+    container.innerHTML = '';
+    const chaves = Object.keys(assentosEscolhidos);
+    
+    if (chaves.length === 0) {
+        container.innerHTML = '<p class="empty-list-text">Nenhum assento selecionado no mapa.</p>';
+        totalLabel.textContent = 'R$ 0,00';
+        btn.disabled = true;
+        return;
     }
+    
+    let total = 0;
+    
+    chaves.forEach(assento => {
+        const tipo = assentosEscolhidos[assento];
+        let valor = sessaoSelecionada.precoBase;
+        if (tipo === 'Meia') valor /= 2;
+        if (sessaoSelecionada.tipoSala.includes('VIP') || sessaoSelecionada.tipoSala.includes('3D')) {
+            valor *= 1.40;
+        }
+        total += valor;
+        
+        const div = document.createElement('div');
+        div.style.cssText = 'background:#1e1e1e;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid #333;display:flex;justify-content:space-between;align-items:center;';
+        div.innerHTML = `
+            <span style="font-weight:bold;color:#2563eb;">${assento}</span>
+            <select onchange="mudarTipo('${assento}',this.value)" style="padding:5px;background:#2d2d2d;color:white;border:1px solid #444;border-radius:4px;">
+                <option value="Inteira" ${tipo==='Inteira'?'selected':''}>Inteira</option>
+                <option value="Meia" ${tipo==='Meia'?'selected':''}>Meia</option>
+                <option value="Infantil" ${tipo==='Infantil'?'selected':''}>Infantil</option>
+            </select>
+            <span style="color:#16a34a;font-weight:bold;">R$ ${valor.toFixed(2)}</span>
+        `;
+        container.appendChild(div);
+    });
+    
+    totalLabel.textContent = `R$ ${total.toFixed(2)}`;
+    btn.disabled = false;
+}
 
-    if (precisaValidarIdade) {
-        const confirmouDoc = confirm(
-            `⚠️ CONTROLE DE IDADE EXIGIDO! ⚠️\n\nEste filme é restrito para menores de 18 anos.\n` +
-            `Existem ingressos do tipo Meia ou Infantil neste pedido.\n\n` +
-            `Você confirma que conferiu os documentos de identidade de TODOS os beneficiários?`
-        );
+function mudarTipo(assento, tipo) {
+    assentosEscolhidos[assento] = tipo;
+    atualizarInterfaceVenda();
+}
 
-        if (!confirmouDoc) {
-            alert("Venda bloqueada. Verificação de identidade obrigatória.");
+// CONFIRMAR VENDA - SALVA NO BANCO
+document.getElementById('btnConfirmSale').addEventListener('click', async function() {
+    const chaves = Object.keys(assentosEscolhidos);
+    if (chaves.length === 0) return;
+    
+    if (sessaoSelecionada.classificacao === '18 anos') {
+        const valida = chaves.some(a => assentosEscolhidos[a] === 'Infantil' || assentosEscolhidos[a] === 'Meia');
+        if (valida && !confirm('⚠️ Filme 18+. Conferiu documentos?')) {
+            alert('Venda bloqueada.');
             return;
         }
     }
-
-    // Processa a conclusão salvando todos de uma vez (RN01)
-    assentosArray.forEach(assento => {
-        sessaoSelecionada.ocupados.push(assento);
-    });
-
-    alert(`🎉 Compra concluída com sucesso!\nForam emitidos ${assentosArray.length} ingressos para os assentos: [ ${assentosArray.join(', ')} ]`);
     
-    assentosEscolhidos = {};
-    gerarMapaAssentos();
-    atualizarInterfaceVenda();
+    const ingressos = chaves.map(assento => {
+        let valor = sessaoSelecionada.precoBase;
+        if (assentosEscolhidos[assento] === 'Meia') valor /= 2;
+        if (sessaoSelecionada.tipoSala.includes('VIP') || sessaoSelecionada.tipoSala.includes('3D')) {
+            valor *= 1.40;
+        }
+        return {
+            assento: assento,
+            tipo: assentosEscolhidos[assento],
+            valor: parseFloat(valor.toFixed(2))
+        };
+    });
+    
+    try {
+        await window.CineAPI.enviarDados('vendas', {
+            sessaoId: sessaoSelecionada.id,
+            salaId: sessaoSelecionada.salaId,
+            ingressos: ingressos
+        });
+        alert(`✅ Venda concluída! ${chaves.length} ingresso(s) emitido(s).`);
+        window.location.reload();
+    } catch (error) {
+        // Fallback: salva mock
+        alert(`✅ Venda simulada! ${chaves.length} ingresso(s) emitido(s). (Servidor offline)`);
+        chaves.forEach(a => sessaoSelecionada.ocupados.push(a));
+        assentosEscolhidos = {};
+        gerarMapaAssentos();
+        atualizarInterfaceVenda();
+    }
 });
+
+init();
